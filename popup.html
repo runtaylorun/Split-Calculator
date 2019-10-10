@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <title>Split Calculator</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="popup.css">
+  </head>
+  <body>
+
+    <div id="form">
+    </div>
+    
+    <h1>Split Calculator</h1>
+
+    <div class="inputHolder">
+      <label>Time:</label>
+      <input type="text" id="time" placeholder="HH:MM:SS"/>
+    </div>
+
+    <div class="inputHolder">
+      <label>Distance:</label>
+      <input type="text" id="distance"/>
+      <select id="distanceMeasurement">
+        <option>m</option>
+        <option>km</option>
+        <option>mi</option>
+      </select>
+    </div>
+
+    <div class="inputHolder">
+      <label>Splits Every:</label>
+      <input type="text" id="splitDistance"/>
+      <select id="splitMeasurement">
+        <option>m</option>
+        <option>km</option>
+        <option>mi</option>
+      </select>
+    </div>
+
+    <div id="results">
+
+    </div>
+
+    <div id="buttons">
+      <button id="calculateBtn">Calculate</button>
+      <button id="clearBtn">Clear</button>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

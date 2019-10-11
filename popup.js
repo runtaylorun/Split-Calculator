@@ -19,11 +19,7 @@ calculateBtn.addEventListener("click", function() {
    splitDistance = parseInt(document.getElementById("splitDistance").value, 10);
    splitUnit = document.getElementById("splitMeasurement").value;
 
-   console.log("Time: " + time);
-   console.log("Distance: " + distance);
-   console.log("Split Distance: " + splitDistance);
    ConvertDistances();
-
 
    if(CheckTimeForCorrectFormat(time)) {
      alert("Please put your time in the proper format 00:00:00");
@@ -47,7 +43,6 @@ calculateBtn.addEventListener("click", function() {
    timeInSeconds = ConvertTimeToSeconds(time);
 
    averageSplitInSeconds = GetAverageSplitInSeconds(timeInSeconds);
-
 
    ClearResults();
    DisplaySplits(averageSplitInSeconds);
@@ -74,15 +69,12 @@ function ClearResults() {
 
 function ConvertTimeToSeconds(time) {
   var hours = parseInt(time.slice(0, time.indexOf(":")), 10);
-  console.log("Hours: " + hours);
 
   time = time.slice(time.indexOf(":") + 1);
   var minutes = parseInt(time.slice(0, time.indexOf(":")), 10);
-  console.log("Minutes: " + minutes);
 
   time = time.slice(time.indexOf(":") + 1);
   var seconds = parseInt(time.slice(0), 10);
-  console.log( "Seconds: " + seconds);
 
   return seconds + (minutes * 60) + ((hours * 60) * 60);
 }
@@ -90,11 +82,7 @@ function ConvertTimeToSeconds(time) {
 function GetAverageSplitInSeconds(timeInSeconds) {
   var numberOfSplits = distance / splitDistance;
 
-  console.log("Number of Splits: " + numberOfSplits);
-
   var secondsPerSplit = timeInSeconds / numberOfSplits;
-
-  console.log("Seconds per Split: " + secondsPerSplit);
 
   return secondsPerSplit;
 }
@@ -123,7 +111,6 @@ function DisplaySplits(averageSplitInSeconds) {
     averageSplitInSeconds += originalSplitSeconds;
   }
 
-    console.log(totalTime);
     var pTag = document.createElement("p");
     if(averageSplitInSeconds > 3600) {
       pTag.innerText = distance + splitUnit + " : " + time;
@@ -236,7 +223,7 @@ function ConvertDistances() {
     distance = distance * 1000;
   }
   else if(distanceUnit == "m" && splitUnit == "mi") {
-    distance = Math.round(distance / 1600);
+    distance = distance / 1600;
   }
   else if(distanceUnit == "km" && splitUnit == "mi") {
     distance = (distance * 1000) / 1600;
@@ -245,7 +232,7 @@ function ConvertDistances() {
     distance = distance * 1600;
   }
   else if(distanceUnit == "mi" && splitUnit == "km") {
-    distance = Math.round((distance * 1600) / 1000);
+    distance = (distance * 1600) / 1000;
   }
 }
 

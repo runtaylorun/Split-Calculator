@@ -19,6 +19,11 @@ calculateBtn.addEventListener("click", function() {
    splitDistance = parseInt(document.getElementById("splitDistance").value, 10);
    splitUnit = document.getElementById("splitMeasurement").value;
 
+   if(CheckForExtremeNumbers()) {
+     alert("Distance is too extreme");
+     return;
+   }
+
    ConvertDistances();
 
    if(CheckTimeForCorrectFormat(time)) {
@@ -97,15 +102,18 @@ function DisplaySplits(averageSplitInSeconds) {
       leftoverSeconds = 0;
       averageSplitInSeconds + 1;
     }
-    if(leftoverSeconds < 10) {
+    if(leftoverSeconds < 10 && averageSplitInSeconds < 60) {
+
+    }
+    else if(leftoverSeconds < 10){
       leftoverSeconds = "0" + leftoverSeconds;
     }
     var pTag = document.createElement("p");
     if(GetTimeToDisplay(averageSplitInSeconds) == 0) {
-      pTag.innerText = i + splitUnit + " : " + leftoverSeconds;
+      pTag.innerText = i + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + leftoverSeconds;
     }
     else {
-      pTag.innerText = i + splitUnit + " : " + GetTimeToDisplay(averageSplitInSeconds) + ":" + leftoverSeconds;
+      pTag.innerText = i + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + GetTimeToDisplay(averageSplitInSeconds) + ":" + leftoverSeconds;
     }
     splitDisplay.appendChild(pTag);
     averageSplitInSeconds += originalSplitSeconds;
@@ -113,15 +121,31 @@ function DisplaySplits(averageSplitInSeconds) {
 
     var pTag = document.createElement("p");
     if(averageSplitInSeconds > 3600) {
-      pTag.innerText = distance + splitUnit + " : " + time;
+      var finalHours = parseInt(time.slice(0, time.indexOf(":")), 10);
+      if(finalHours < 10) {
+        pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + time.slice(1);;
+      }
+      else {
+        pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + time;
+      }
     }
     else if(averageSplitInSeconds < 60) {
-      time = time.slice(time.indexOf(":") + 1);
-
-      pTag.innerText = distance + splitUnit + " : " + time.slice(time.indexOf(":") + 1);
+        var finalSeconds = parseInt(time.slice(6), 10);
+        if(finalSeconds < 10) {
+          pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + time.slice(7);
+        }
+        else {
+          pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + time.slice(6);
+        }
     }
     else {
-      pTag.innerText = distance + splitUnit + " : " + time.slice(time.indexOf(":") + 1);
+      var finalMinutes = parseInt(time.slice(3,5), 10);
+      if(finalMinutes < 10) {
+        pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + time.slice(4);
+      }
+      else {
+        pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + time.slice(time.indexOf(":") + 1);
+      }
     }
 
     splitDisplay.appendChild(pTag);
@@ -243,5 +267,11 @@ function CheckSplitDistance() {
   }
   else {
     return false;
+  }
+}
+
+function CheckForExtremeNumbers() {
+  if(distance > 100000) {
+    return true;
   }
 }

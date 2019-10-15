@@ -4,6 +4,11 @@
   "name": "Split Calculator",
   "description": "This extension will analyze a page using GTmetrix",
   "version": "1.0",
+  "icons": {
+    "16": "running16.png",
+    "48": "running32.png",
+    "128": "running128.png"
+  },
 
   "browser_action": {
    "default_popup": "popup.html"

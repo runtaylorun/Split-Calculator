@@ -73,13 +73,9 @@ function ClearResults() {
 }
 
 function ConvertTimeToSeconds(time) {
-  var hours = parseInt(time.slice(0, time.indexOf(":")), 10);
-
-  time = time.slice(time.indexOf(":") + 1);
-  var minutes = parseInt(time.slice(0, time.indexOf(":")), 10);
-
-  time = time.slice(time.indexOf(":") + 1);
-  var seconds = parseInt(time.slice(0), 10);
+  var hours = parseInt(time.slice(0, 2), 10);
+  var minutes = parseInt(time.slice(3, 5), 10);
+  var seconds = parseInt(time.slice(6), 10);
 
   return seconds + (minutes * 60) + ((hours * 60) * 60);
 }
@@ -121,7 +117,7 @@ function DisplaySplits(averageSplitInSeconds) {
 
     var pTag = document.createElement("p");
     if(averageSplitInSeconds > 3600) {
-      var finalHours = parseInt(time.slice(0, time.indexOf(":")), 10);
+      var finalHours = parseInt(time.slice(0, 2), 10);
       if(finalHours < 10) {
         pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + time.slice(1);;
       }

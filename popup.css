@@ -83,10 +83,10 @@ button:hover {
 .inputHolder {
   margin: 0 auto;
   padding: 3px;
-  width: 70%;
+  width: 80%;
 }
 
-#time {
+#raceTime {
   margin-left: 54px;
 }
 #distance {

@@ -1,94 +1,90 @@
-var calculateBtn = document.getElementById('calculateBtn');
-var clearBtn = document.getElementById('clearBtn');
-var splitDisplay = document.getElementById('results');
-var timeField = document.getElementById('time');
-var distanceField = document.getElementById('distance');
-var splitField = document.getElementById('splitDistance');
-var totalTime;
-var distance;
-var distanceUnit;
-var splitDistance;
-var splitUnit;
-var timeInSeconds;
-var AverageSplit
+const calculateBtn = document.getElementById('calculateBtn');
+const clearFormBtn = document.getElementById('clearBtn');
+const splitDisplayArea = document.getElementById('results');
+const splitUnitField = document.getElementById('splitMeasurement');
+const distanceUnitField = document.getElementById('distanceMeasurement');
+const raceTimeField = document.getElementById('raceTime');
+const distanceField = document.getElementById('distance');
+const splitDistanceField = document.getElementById('splitDistance');
 
-calculateBtn.addEventListener("click", function() {
-   time = document.getElementById("time").value;
-   distance = parseInt(document.getElementById("distance").value, 10);
-   distanceUnit = document.getElementById("distanceMeasurement").value;
-   splitDistance = parseInt(document.getElementById("splitDistance").value, 10);
-   splitUnit = document.getElementById("splitMeasurement").value;
+calculateBtn.addEventListener("click", () => {
+  
+   let raceTime = raceTimeField.value;
+   let distance = parseInt(distanceField.value, 10);
+   let distanceUnit = distanceUnitField.value;
+   let splitDistance = parseInt(splitDistanceField.value, 10);
+   let splitUnit = splitUnitField.value;
 
-   if(CheckForExtremeNumbers()) {
+   if(CheckForExtremeNumbers(distance)) {
      alert("Distance is too extreme");
      return;
    }
 
-   ConvertDistances();
+   ConvertDistances(distanceUnit, splitUnit, distance);
 
-   if(CheckTimeForCorrectFormat(time)) {
-     alert("Please put your time in the proper format 00:00:00");
+   if(CheckTimeForCorrectFormat(raceTime)) {
+     alert("Please put your raceTime in the proper format 00:00:00");
      return;
    }
    if(CheckForValidNumbers(distance, splitDistance)) {
      return;
    }
-   if(CheckForEmptyFields(time, distance, splitDistance)) {
+   if(CheckForEmptyFields(raceTime, distance, splitDistance)) {
      return;
    }
-   if(CheckSplitDistance()) {
+   if(CheckSplitDistance(distance, splitDistance)) {
      alert("Split distance cannot be greater than your race distance.");
      return;
    }
-   if(CheckForNumbersGreaterThanSixty()) {
+   if(CheckForNumbersGreaterThanSixty(raceTime)) {
      alert("Seconds, Minutes, or Hours are greater than 59");
      return;
    }
 
-   timeInSeconds = ConvertTimeToSeconds(time);
+   let timeInSeconds = ConvertTimeToSeconds(raceTime);
 
-   averageSplitInSeconds = GetAverageSplitInSeconds(timeInSeconds);
+   averageSplitInSeconds = GetAverageSplitInSeconds(timeInSeconds, distance, splitDistance);
 
    ClearResults();
-   DisplaySplits(averageSplitInSeconds);
+   DisplaySplits(averageSplitInSeconds, raceTime, splitUnit, distance, splitDistance);
 
 })
 
-clearBtn.addEventListener("click", function() {
+clearFormBtn.addEventListener("click", () => {
    ClearForm();
    ClearResults();
 });
 
-function ClearForm() {
-  timeField.value = "";
+let ClearForm = () => {
+  raceTimeField.value = "";
   distanceField.value = "";
-  splitField.value = "";
+  splitDistanceField.value = "";
 }
 
-function ClearResults() {
+let ClearResults = () => {
   var node = document.getElementById("results");
   while(node.firstChild) {
     node.removeChild(node.firstChild);
   }
 }
 
-function ConvertTimeToSeconds(time) {
-  var hours = parseInt(time.slice(0, 2), 10);
-  var minutes = parseInt(time.slice(3, 5), 10);
-  var seconds = parseInt(time.slice(6), 10);
+let ConvertTimeToSeconds = (raceTime) => {
+  var hours = parseInt(raceTime.slice(0, 2), 10);
+  var minutes = parseInt(raceTime.slice(3, 5), 10);
+  var seconds = parseInt(raceTime.slice(6), 10);
 
   return seconds + (minutes * 60) + ((hours * 60) * 60);
 }
 
-function GetAverageSplitInSeconds(timeInSeconds) {
+let GetAverageSplitInSeconds = (timeInSeconds, distance, splitDistance) => {
   var numberOfSplits = distance / splitDistance;
 
-  var secondsPerSplit = timeInSeconds / numberOfSplits;
+  let secondsPerSplit = timeInSeconds / numberOfSplits;
 
   return secondsPerSplit;
 }
 
-function DisplaySplits(averageSplitInSeconds) {
+let DisplaySplits = (averageSplitInSeconds, raceTime, splitUnit, distance, splitDistance) => {
   var leftoverSeconds;
   var originalSplitSeconds = averageSplitInSeconds;
   for(var i = splitDistance; i < distance; i+= splitDistance) {
@@ -111,44 +107,43 @@ function DisplaySplits(averageSplitInSeconds) {
     else {
       pTag.innerText = i + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + GetTimeToDisplay(averageSplitInSeconds) + ":" + leftoverSeconds;
     }
-    splitDisplay.appendChild(pTag);
+    splitDisplayArea.appendChild(pTag);
     averageSplitInSeconds += originalSplitSeconds;
   }
 
     var pTag = document.createElement("p");
     if(averageSplitInSeconds > 3600) {
-      var finalHours = parseInt(time.slice(0, 2), 10);
+      var finalHours = parseInt(raceTime.slice(0, 2), 10);
       if(finalHours < 10) {
-        pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + time.slice(1);;
+        pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime.slice(1);;
       }
       else {
-        pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + time;
+        pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime;
       }
     }
     else if(averageSplitInSeconds < 60) {
-        var finalSeconds = parseInt(time.slice(6), 10);
+        var finalSeconds = parseInt(raceTime.slice(6), 10);
         if(finalSeconds < 10) {
-          pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + time.slice(7);
+          pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime.slice(7);
         }
         else {
-          pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + time.slice(6);
+          pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime.slice(6);
         }
     }
     else {
-      var finalMinutes = parseInt(time.slice(3,5), 10);
+      var finalMinutes = parseInt(raceTime.slice(3,5), 10);
       if(finalMinutes < 10) {
-        pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + time.slice(4);
+        pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime.slice(4);
       }
       else {
-        pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + time.slice(time.indexOf(":") + 1);
+        pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime.slice(raceTime.indexOf(":") + 1);
       }
     }
 
-    splitDisplay.appendChild(pTag);
+    splitDisplayArea.appendChild(pTag);
 }
 
-function GetTimeToDisplay(averageSplitInSeconds)
-{
+let GetTimeToDisplay = (averageSplitInSeconds) => {
   if(averageSplitInSeconds < 3600) {
     return Math.floor(averageSplitInSeconds / 60);
   }
@@ -161,11 +156,11 @@ function GetTimeToDisplay(averageSplitInSeconds)
   }
 }
 
-function CheckForEmptyFields(time, distance, splitDistance) {
+let CheckForEmptyFields = (raceTime, distance, splitDistance) => {
   var numberOfEmptyFields = 0;
-  if(time == "") {
+  if(raceTime == "") {
     numberOfEmptyFields++;
-    alert("Please fill in the time field.");
+    alert("Please fill in the raceTime field.");
   }
   if(distance == "") {
     numberOfEmptyFields++;
@@ -188,7 +183,7 @@ function CheckForEmptyFields(time, distance, splitDistance) {
   }
 }
 
-function CheckForValidNumbers(distance, splitDistance) {
+let CheckForValidNumbers = (distance, splitDistance) => {
   var invalidNumbers = 0;
 
   if(isNaN(distance)) {
@@ -204,38 +199,38 @@ function CheckForValidNumbers(distance, splitDistance) {
   if(invalidNumbers > 0) {
     return true;
   }
+  
 }
 
 
-function CheckTimeForCorrectFormat(time) {
+let CheckTimeForCorrectFormat = (raceTime) => {
 
-  if(time.includes(":") == false)
+  if(raceTime.length != 8)
   {
     return true;
   }
-  if(time.length != 8) {
-    return true;
-  }
-  if(time.charAt(2) != ":" || time.charAt(5) != ":")
+
+  if(raceTime.charAt(2) != ":" || raceTime.charAt(5) != ":")
   {
     return true;
   }
-  if(isNaN(parseInt(time.charAt(0))) || isNaN(parseInt(time.charAt(1))) || isNaN(parseInt(time.charAt(3))) || isNaN(parseInt(time.charAt(4))) || isNaN(parseInt(time.charAt(6))) || isNaN(parseInt(time.charAt(7)))) {
+
+  if(isNaN(parseInt(raceTime.charAt(0))) || isNaN(parseInt(raceTime.charAt(1))) || isNaN(parseInt(raceTime.charAt(3))) || isNaN(parseInt(raceTime.charAt(4))) || isNaN(parseInt(raceTime.charAt(6))) || isNaN(parseInt(raceTime.charAt(7)))) {
     return true;
   }
 }
 
-function CheckForNumbersGreaterThanSixty() {
-  var seconds = parseInt(time.charAt(6) + time.charAt(7), 10);
-  var minutes = parseInt(time.charAt(3) + time.charAt(4), 10);
-  var hours = parseInt(time.charAt(0) + time.charAt(1), 10);
+let CheckForNumbersGreaterThanSixty = (raceTime) => {
+  let seconds = parseInt(raceTime.charAt(6) + raceTime.charAt(7), 10);
+  let minutes = parseInt(raceTime.charAt(3) + raceTime.charAt(4), 10);
+  let hours = parseInt(raceTime.charAt(0) + raceTime.charAt(1), 10);
 
   if(seconds > 59 || minutes > 59 || hours > 59) {
     return true;
   }
 }
 
-function ConvertDistances() {
+let ConvertDistances = (distanceUnit, splitUnit, distance) => {
   if(distanceUnit == "m" && splitUnit == "km") {
     distance = distance / 1000;
   }
@@ -257,17 +252,6 @@ function ConvertDistances() {
 }
 
 
-function CheckSplitDistance() {
-  if(distance < splitDistance) {
-    return true;
-  }
-  else {
-    return false;
-  }
-}
+let CheckSplitDistance = (distance, splitDistance) => distance < splitDistance ? true : false
 
-function CheckForExtremeNumbers() {
-  if(distance > 100000) {
-    return true;
-  }
-}
+let CheckForExtremeNumbers = (distance) => distance >= 100000 ? true : false

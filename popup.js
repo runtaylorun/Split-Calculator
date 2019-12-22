@@ -15,12 +15,12 @@ calculateBtn.addEventListener("click", () => {
    let splitDistance = parseInt(splitDistanceField.value, 10);
    let splitUnit = splitUnitField.value;
 
-   if(CheckForExtremeNumbers(distance)) {
+   if(CheckForExtremeDistance(distance)) {
      alert("Distance is too extreme");
      return;
    }
 
-   ConvertDistances(distanceUnit, splitUnit, distance);
+   let convertedDistance = ConvertDistances(distanceUnit, splitUnit, distance);
 
    if(CheckTimeForCorrectFormat(raceTime)) {
      alert("Please put your raceTime in the proper format 00:00:00");
@@ -32,7 +32,7 @@ calculateBtn.addEventListener("click", () => {
    if(CheckForEmptyFields(raceTime, distance, splitDistance)) {
      return;
    }
-   if(CheckSplitDistance(distance, splitDistance)) {
+   if(CheckSplitDistance(convertedDistance, splitDistance)) {
      alert("Split distance cannot be greater than your race distance.");
      return;
    }
@@ -43,10 +43,10 @@ calculateBtn.addEventListener("click", () => {
 
    let timeInSeconds = ConvertTimeToSeconds(raceTime);
 
-   averageSplitInSeconds = GetAverageSplitInSeconds(timeInSeconds, distance, splitDistance);
+   averageSplitInSeconds = GetAverageSplitInSeconds(timeInSeconds, convertedDistance, splitDistance);
 
    ClearResults();
-   DisplaySplits(averageSplitInSeconds, raceTime, splitUnit, distance, splitDistance);
+   DisplaySplits(averageSplitInSeconds, raceTime, splitUnit, convertedDistance, splitDistance);
 
 })
 
@@ -69,27 +69,27 @@ let ClearResults = () => {
 }
 
 let ConvertTimeToSeconds = (raceTime) => {
-  var hours = parseInt(raceTime.slice(0, 2), 10);
-  var minutes = parseInt(raceTime.slice(3, 5), 10);
-  var seconds = parseInt(raceTime.slice(6), 10);
+  let hours = parseInt(raceTime.slice(0, 2), 10);
+  let minutes = parseInt(raceTime.slice(3, 5), 10);
+  let seconds = parseInt(raceTime.slice(6), 10);
 
   return seconds + (minutes * 60) + ((hours * 60) * 60);
 }
 
-let GetAverageSplitInSeconds = (timeInSeconds, distance, splitDistance) => {
-  var numberOfSplits = distance / splitDistance;
+let GetAverageSplitInSeconds = (timeInSeconds, convertedDistance, splitDistance) => {
+  let numberOfSplits = convertedDistance / splitDistance;
 
   let secondsPerSplit = timeInSeconds / numberOfSplits;
 
   return secondsPerSplit;
 }
 
-let DisplaySplits = (averageSplitInSeconds, raceTime, splitUnit, distance, splitDistance) => {
-  var leftoverSeconds;
-  var originalSplitSeconds = averageSplitInSeconds;
-  for(var i = splitDistance; i < distance; i+= splitDistance) {
+let DisplaySplits = (averageSplitInSeconds, raceTime, splitUnit, convertedDistance, splitDistance) => {
+  let originalSplitSeconds = averageSplitInSeconds;
 
-    leftoverSeconds = Math.round((averageSplitInSeconds % 60) * 10) / 10;
+  for(var i = splitDistance; i < convertedDistance; i+= splitDistance) {
+
+    let leftoverSeconds = Math.round((averageSplitInSeconds % 60) * 10) / 10;
     if(leftoverSeconds == 60) {
       leftoverSeconds = 0;
       averageSplitInSeconds + 1;
@@ -115,28 +115,28 @@ let DisplaySplits = (averageSplitInSeconds, raceTime, splitUnit, distance, split
     if(averageSplitInSeconds > 3600) {
       var finalHours = parseInt(raceTime.slice(0, 2), 10);
       if(finalHours < 10) {
-        pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime.slice(1);;
+        pTag.innerText = convertedDistance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime.slice(1);;
       }
       else {
-        pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime;
+        pTag.innerText = convertedDistance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime;
       }
     }
     else if(averageSplitInSeconds < 60) {
         var finalSeconds = parseInt(raceTime.slice(6), 10);
         if(finalSeconds < 10) {
-          pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime.slice(7);
+          pTag.innerText = convertedDistance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime.slice(7);
         }
         else {
-          pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime.slice(6);
+          pTag.innerText = convertedDistance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime.slice(6);
         }
     }
     else {
       var finalMinutes = parseInt(raceTime.slice(3,5), 10);
       if(finalMinutes < 10) {
-        pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime.slice(4);
+        pTag.innerText = convertedDistance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime.slice(4);
       }
       else {
-        pTag.innerText = distance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime.slice(raceTime.indexOf(":") + 1);
+        pTag.innerText = convertedDistance + splitUnit + "\xa0\xa0" + " : " + "\xa0\xa0" + raceTime.slice(raceTime.indexOf(":") + 1);
       }
     }
 
@@ -204,7 +204,7 @@ let CheckForValidNumbers = (distance, splitDistance) => {
 
 
 let CheckTimeForCorrectFormat = (raceTime) => {
-
+  
   if(raceTime.length != 8)
   {
     return true;
@@ -215,7 +215,7 @@ let CheckTimeForCorrectFormat = (raceTime) => {
     return true;
   }
 
-  if(isNaN(parseInt(raceTime.charAt(0))) || isNaN(parseInt(raceTime.charAt(1))) || isNaN(parseInt(raceTime.charAt(3))) || isNaN(parseInt(raceTime.charAt(4))) || isNaN(parseInt(raceTime.charAt(6))) || isNaN(parseInt(raceTime.charAt(7)))) {
+  if(isNaN(Number(raceTime.slice(0,2))) || isNaN(Number(raceTime.slice(3,5))) || isNaN(Number(raceTime.slice(6,8)))) {
     return true;
   }
 }
@@ -231,6 +231,7 @@ let CheckForNumbersGreaterThanSixty = (raceTime) => {
 }
 
 let ConvertDistances = (distanceUnit, splitUnit, distance) => {
+
   if(distanceUnit == "m" && splitUnit == "km") {
     distance = distance / 1000;
   }
@@ -249,9 +250,11 @@ let ConvertDistances = (distanceUnit, splitUnit, distance) => {
   else if(distanceUnit == "mi" && splitUnit == "km") {
     distance = (distance * 1600) / 1000;
   }
+
+  return distance;
 }
 
 
-let CheckSplitDistance = (distance, splitDistance) => distance < splitDistance ? true : false
+let CheckSplitDistance = (convertedDistance, splitDistance) => convertedDistance < splitDistance ? true : false
 
-let CheckForExtremeNumbers = (distance) => distance >= 100000 ? true : false
+let CheckForExtremeDistance = (distance) => distance >= 100000 ? true : false
